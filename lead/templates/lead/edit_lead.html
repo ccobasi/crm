@@ -1,0 +1,22 @@
+{% extends 'core/base.html' %}
+{% block title %}Edit lead{% endblock %}
+{% block content %}
+<h1 class="text-xl py-6 px-6">Edit lead</h1>
+
+{% if form.errors %}
+<div class="alert alert-danger">
+    <strong>Error:</strong> Please correct the errors below.
+    <ul>
+        {% for error in form.errors %}
+        <li>{{ error }}</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
+
+<form action="{% url 'leads_edit' pk=lead.pk %}" method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button class="py-4 px-8 bg-blue-700 text-white rounded-xl">Submit</button>
+</form>
+{% endblock %}

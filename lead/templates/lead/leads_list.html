@@ -4,6 +4,7 @@
 <div class="py-6 px-6">
     <h1 class="mb-4 text-xl py-6 px-6">Leads</h1>
     <a href="{% url 'add_lead' %}" class="inline-block py-4 px-6 bg-blue-600 rounded-xl text-white">Add Lead</a>
+    {% if leads %}
     <div class="mt-6 flex justify-between">
         <p class="py-4 px-2 bg-gray-200 font-semibold w-full">Name</p>
         <p class="py-4 px-2 bg-gray-200 font-semibold w-full">Priority</p>
@@ -17,5 +18,9 @@
         </div>
         
     {% endfor %}
+    {% else %}
+        <p class="mt-6 px-2">There is no lead in the database yet...</p>
+    {% endif %}
+    
 </div>
 {% endblock %}
