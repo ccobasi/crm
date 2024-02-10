@@ -1,36 +1,10 @@
-# from django.contrib.auth.decorators import login_required
-# from django.shortcuts import render, redirect
-# from .forms import AddLeadForm
-# from .models import Lead
-
-# @login_required
-# def leads_list(request):
-#     leads = Lead.objects.filter(created_by=request.user)
-
-#     return render(request, 'lead/leads_list.html', {'leads': leads})
-
-# @login_required
-# def add_lead(request):
-#     if request.method == 'POST':
-#         form = AddLeadForm(request.POST)
-
-#         if form.is_valid():
-#             lead = form.save(commit=False)
-#             lead.created_by = request.user
-#             lead.save()
-
-#             return redirect('dashboard')
-#     else:
-#         form = AddLeadForm()
-
-#     return render(request, 'lead/add_lead.html', {'form': form})
 from django.contrib import messages
 from django.shortcuts import get_object_or_404, render, redirect
 from django.views import View
 from django.contrib.auth.decorators import login_required
 from .forms import AddLeadForm
 from .models import Lead
-
+from client.models import Client
 class AddLeadView(View):
     template_name = 'lead/add_lead.html'
 
@@ -52,7 +26,7 @@ class AddLeadView(View):
 
 @login_required
 def leads_list(request):
-    leads = Lead.objects.filter(created_by=request.user)
+    leads = Lead.objects.filter(created_by=request.user, converted_to_client=False)
 
     return render(request, 'lead/leads_list.html', {'leads': leads})
 
@@ -86,7 +60,15 @@ def leads_edit(request, pk):
 
     else:
         form = AddLeadForm(instance=lead)
-        # messages.error(request, "Error editing the lead. Please check the form.")
     
     return render(request, 'lead/edit_lead.html', {'form': form, 'lead': lead})
    
+@login_required
+def convert_to_client(request, pk):
+    lead = get_object_or_404(Lead, pk=pk, created_by=request.user)
+    client = Client.objects.create(name=lead.name, email=lead.email, description=lead.description, created_by=request.user)
+    lead.converted_to_client = True
+    lead.save()
+    messages.success(request, "Successfully converted to client")
+
+    return redirect('leads_list')
